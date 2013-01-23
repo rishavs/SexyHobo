@@ -1,0 +1,27 @@
+post
+	id
+	Title
+	thumbnail
+	link
+	Description
+	author
+	created_datetime
+	tags
+		major
+			#sports
+			#news
+			#nsfw
+			#nsfl
+			#movies
+			#tv
+			#celebs
+			#technology
+			#science
+		minor
+	comments
+		id
+		parent
+		author
+		created_datetime
+		comment_text
+		
