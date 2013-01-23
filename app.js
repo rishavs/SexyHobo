@@ -1,9 +1,7 @@
-
-/**
- * Module dependencies.
- 
+/*
  Once basic page is up, pick up logging and BDD/TDD
  after that new story add
+ after that review code for aync possibilities
  after that admin page
  After that pick up comments UI
  after that user sessions
@@ -18,6 +16,7 @@ var express = require('express')
   
 var db = require('./modules/db');
 var utilities = require('./modules/utilities');
+var bookStitcher = require('./schema/bookStitcher');
 
 var app = express();
 
@@ -41,14 +40,32 @@ app.get('/', routes.index);
 
 app.get('/json', function(req, res, next) {
     res.contentType('application/json');
-    db.getValue(function(err, val) {
+    db.getValue(function(err, reply) {
         if (err) return next(err);
-        res.send(val);  
+        res.send(reply);  
     });
 });
 
 // db.flushAllKeys();
-// db.createDummyStories(100);
+// db.createDummyStories(10);
+
+bookStitcher.stitchAllStories(function(reply) {
+	console.log(reply);  
+});
+// console.log(bookStitcher.stitchAllStories());
+
+// db.getAllStoriesSet(function(err, reply) {
+	// if (err) return next(err);
+	// console.log('--------------------');
+	// console.log(reply);
+	// console.log('--------------------');	
+// });
+
+// db.getStoryProperties(5, function(err, reply) {
+	// if (err) return next(err);
+	// console.log('--------------------');
+	// console.log(reply);  
+// });
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

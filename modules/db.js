@@ -3,7 +3,12 @@
 
 storyCount : int'{{index}}'
 
+//later this will be broken into multiple sets. one for daily, one for the week, one for the month and one for allTime. This will ensure that performance on new stories is faster
 storyIdSet : set'{{index}}'
+
+//later this will be broken into multiple sets. one for daily, one for the week, one for the month and one for allTime. This will ensure that performance on new stories is faster
+storySlugSet : set'{{lorem(5, 10)}}'
+
 
 story:%id%:properties : hash{
 	title: '{{lorem(5, 10)}}',
@@ -70,7 +75,29 @@ module.exports = _redisDb = (function() {
 			console.log(type, arguments);
 		}
 	}
-
+	
+	
+	var getAllStoriesSet = function(callback) {
+        dbConnection.smembers("storyIdSet", function (err, reply) {
+			if (err) throw err;
+			else {
+				var val = reply;
+				callback(err, val);
+			};
+        });
+    };
+	
+	// function to return story properties if given the id of a story
+	var getStoryProperties = function(storyId, callback) {
+        dbConnection.hgetall('story/' + String(storyId) + '/properties', function (err, reply) {
+			if (err) throw err;
+			else {
+				var val = reply;
+				callback(err, val);
+			};
+        });
+    };
+	
 	var getValue = function(callback) {
         dbConnection.get("hello", function (err, reply) {
             var val = reply ? reply.toString() : null;
@@ -99,7 +126,6 @@ module.exports = _redisDb = (function() {
     // put these under multi commands
 	// for loop to n
         for (var i=1; i<num+1; i++) {
-        
             // recreate story index at 1
             dbConnection.incr("story/index", function (err, reply) {
                 console.log ("Incrementing Story index......");
@@ -110,6 +136,14 @@ module.exports = _redisDb = (function() {
             // slugify title
             // initialize storySlugSet
             // check if slug exists in storySlugSet
+			
+			// add story id to storyIdSet. this is from where the stitcher gets its list of stories to make a book
+			dbConnection.sadd('storyIdSet', String(i), function (err, reply) {
+                console.log ("Adding Story Id to storyIdSet....");
+                if (err) throw err;
+                else console.log("STORY ID INSERTED - " + reply);
+                });
+				
             // add story to storySlugSet
             dbConnection.sadd('storySlugSet', utilities.sluggify('Sample Story ' + String(i)), function (err, reply) {
                 console.log ("Adding Slug to storySlugSet....");
@@ -130,8 +164,6 @@ module.exports = _redisDb = (function() {
             });
         // insertstory:%id%:tags in list
         // thumbup and thumbdown
-        
-        console.log("----------------------------------\n");
         }
     };
         
@@ -142,6 +174,8 @@ module.exports = _redisDb = (function() {
     return {
 		getValue: getValue,
         flushAllKeys : flushAllKeys,
-        createDummyStories : createDummyStories
+        createDummyStories : createDummyStories,
+		getAllStoriesSet : getAllStoriesSet,
+		getStoryProperties : getStoryProperties
 	}
 })();
