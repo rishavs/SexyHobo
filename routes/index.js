@@ -4,5 +4,10 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
+	if(posts){
+		res.render('homePage', { title: t, posts:posts});
+	}
+	else {
+		res.render('homePage', { title: t, posts:null})
+	}
 };

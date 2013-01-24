@@ -5,6 +5,15 @@
  after that admin page
  After that pick up comments UI
  after that user sessions
+ 
+ function mySandwich(param1, param2, callback) {  
+    alert('Started eating my sandwich.\n\nIt has: ' + param1 + ', ' + param2);  
+    if (callback && typeof(callback) === "function") {  
+        callback();  
+    }  
+}  
+  
+mySandwich('ham', 'cheese', 'vegetables');  
  */
 
 var express = require('express')
