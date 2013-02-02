@@ -16,18 +16,26 @@
 mySandwich('ham', 'cheese', 'vegetables');  
  */
 
+/**
+ * Module dependencies.
+ */
+
+var context = {};
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
-  , path = require('path')
-  , redis = require('redis');
-  
-var db = require('./modules/db');
-var utilities = require('./modules/utilities');
-var bookStitcher = require('./schema/bookStitcher');
+  , path = require('path');
+
+var schema = require('./modules/schema.js');
 
 var app = express();
+
+// init schema stitcher
+schema.stitchAllStories(function (reply) {
+		console.log("Book has been stitched!\n\n");
+		schema.stitchedBook = reply;
+});
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -46,36 +54,14 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-
-app.get('/json', function(req, res, next) {
+app.get('/test', function(req, res, next) {
     res.contentType('application/json');
-    db.getValue(function(err, reply) {
-        if (err) return next(err);
-        res.send(reply);  
-    });
+    res.send(schema.stitchedBook);  
 });
 
-// db.flushAllKeys();
-// db.createDummyStories(10);
-
-bookStitcher.stitchAllStories(function(reply) {
-	console.log(reply);  
-});
-// console.log(bookStitcher.stitchAllStories());
-
-// db.getAllStoriesSet(function(err, reply) {
-	// if (err) return next(err);
-	// console.log('--------------------');
-	// console.log(reply);
-	// console.log('--------------------');	
-// });
-
-// db.getStoryProperties(5, function(err, reply) {
-	// if (err) return next(err);
-	// console.log('--------------------');
-	// console.log(reply);  
-// });
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
+
+
