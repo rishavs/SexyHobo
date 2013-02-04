@@ -1,8 +1,8 @@
 {
   "db": {
-    "host": "gar.redistogo.com",
-    "port": 9541,
-	"authKey": "b730f7a100f204d5d7a0b09abd39129f"
+    "host": "",
+    "port": ,
+	"authKey": ""
   },
   "http": {
     "ip": "process.env.IP",
